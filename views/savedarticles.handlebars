@@ -1,0 +1,146 @@
+
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">NYT Scraper</a>
+    </div>
+
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li><a href="/">Home</a></li>
+        <li class="active"><a href="/savedarticles">Saved Articles <span class="sr-only">(current)</span></a></li>
+      </ul>
+      <form action="/scrape" method="POST" class="navbar-form navbar-left">
+        <button type="submit" class="btn btn-default">SCRAPE ARTICLES</button>
+      </form>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="jumbotron">
+      <!--       <h1> NYT Scraper! </h1> -->
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      {{#each articles}}
+        <div class="panel panel-info">
+          <div class="panel-heading row">
+            <div class="col-xs-6">
+              <h3 class="panel-title pull-left">{{this.title}}</h3>
+            </div>
+            <div class="col-xs-3">
+              <button id="modalbutton" type="submit" class="btn btn-default pull-right" data-toggle="modal" data-id={{this.id}} data-target="#myModal">Enter Notes</button>
+            </div>
+            <div class="col-xs-3">
+              <form action="/delete/{{this.id}}?_method=DELETE method="POST">
+                <button type="submit" class="btn btn-default pull-right">Delete Saved</button>
+              </form>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xs-12>">
+              <div class="panel-body">
+                <p><a href={{this.link}} target="_blank">{{this.link}}</a></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      {{/each}}
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Article Notes <span id="articleID"></span></h4>
+      </div>
+      <div class="modal-body">
+        <div id="notes"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+
+<script>
+$(document).on("click", "#modalbutton", function() {
+    $("#notes").empty();
+    // Button tag Id
+    var thisId = $(this).attr("data-id");
+    $("#articleID").text(thisId);
+    // Making call for an article
+    $.ajax({
+      method: "GET",
+      url: "/articles/" + thisId
+    })
+      // Adding notes info
+    .done(function(data) {
+        console.log(data);
+        $("#notes").append("<p id='actualnotes'></p>");
+        if (data.notes) {
+          $("#actualnotes").append("<ul id='notelist'>");
+            for (var i = 0; i < data.notes.length; i++) {
+              $('#notelist').append("<li id='" + data.notes[i]._id + "'>" + data.notes[i].body + " " +
+              "<button data-id='" + data.notes[i]._id +
+              "' id='deletenote'>X</button></li>");
+            }
+          $('#actualnotes').append("</ul>");
+        } else {
+          $('#actualnotes').text("There aren't any notes yet.");
+        }
+        $("#notes").append("<textarea id='bodyinput' name='body'></textarea>");
+        //Appending button to save note
+        $("#notes").append("<button data-id='" + data._id + "' id='savenote'>Save Note</button>");
+     });
+});
+
+$(document).on("click", "#savenote", function() {
+    var thisId = $(this).attr("data-id");
+    //Updating the note
+    $.ajax({
+      method: "POST",
+      url: "/articles/" + thisId,
+      data: {
+        body: $("#bodyinput").val()
+      }
+    })
+
+    .done(function(data) {
+        $("#notelist").empty();
+        for (var i = 0; i < data.notes.length; i++) {
+          $("#notelist").append("<li id='" + data.notes[i]._id + "'>" + data.notes[i].body + " " + "<button data-id='" + data.notes[i]._id +
+          "' id='deletenote'>X</button></li>");
+        }
+    });
+    $("#bodyinput").val("");
+});
+
+$(document).on("click", "#deletenote", function() {
+  var thisId = $(this).attr("data-id");
+  //Deleting note
+  $.ajax({
+    method: "GET",
+    url: "/notes/" + thisId,
+  })
+  .done(function(data) {
+      $("#" + data._id).remove();
+   });
+});
+</script>

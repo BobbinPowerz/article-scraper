@@ -1,0 +1,50 @@
+html {
+	font-size: 12px;
+}
+
+body {
+    background-color: #F7F6F6;
+    
+}
+
+li { 
+    margin-bottom: 1%;
+}
+
+p {
+	font-size: 16px;
+	margin-left: 1%;
+	margin-top: 1%;
+}
+
+#bodyinput {
+    width: 30%;
+}
+
+.jumbotron {
+	overflow: hidden;
+    background: rgba(247, 217, 140, 0.3);
+    background-size: 50%;
+    background-position: center;
+    background-image: url('../images/paper.png');
+    background-repeat: no-repeat;
+    height: 400px;
+    width: 100%;
+}
+
+.panel-heading.row {
+	width: 100%;
+    margin-left: 0%;
+}
+
+.panel-primary {
+    height: 135px;
+}
+
+#savenote {
+    display: block;
+}
+
+@media screen and (max-width: 640px) {
+	
+}
