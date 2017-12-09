@@ -21,8 +21,8 @@ var Article = require("./models/Article.js");
 // Connect to the Mongo DB
 mongoose.Promise = Promise;
 var PORT = process.env.PORT || 3000;
-//mongoose.connect("mongodb://heroku_
-mongoose.connect("mongodb://localhost/mongodbscraper");
+mongoose.connect("mongodb://heroku_h6vxfn7x:5ll786aqmg65bhgs4t02pckp01@ds135486.mlab.com:35486/heroku_h6vxfn7x");
+//mongoose.connect("mongodb://localhost/mongodbscraper");
 var db = mongoose.connection;
 
 // Routes
